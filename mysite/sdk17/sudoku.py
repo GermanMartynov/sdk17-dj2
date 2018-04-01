@@ -42,11 +42,11 @@ class Cell:
         self.index = i          # индекс ячейки в массиве
         self.marks = Marks()    # отметки о возможных значениях
         self.base_value = 0     # значение ячейки, соответствующее решению базового пазла
-        self.set(v, give)
+        self.set(v, give)       # метод устанавливающий значение ячейки
 
     def set(self, v, give=False):
         self.value = v
-        self.given = True if give and v else False
+        self.given = True if give and v else False  # флаг вляется ли ячейка изначально заданной
 
 
 class Puzzle:
@@ -61,7 +61,7 @@ class Puzzle:
         self.solved = {}    # словарь с решением текущего состояния пазла
                             # если словарь пустой - решения не известны, иначе:
                                 # по ключу 'n_solutions' лежит количество решений
-                                # # по ключу 'solution' массив с значениями решения по строкам
+                                # по ключу 'solution' массив с значениями решения по строкам
 
         for i in range(81): # загружаем ячейки пустыми или из базовой строки
             self.grid.append(Cell(i, int(base_str[i]), give=True)) if base_str else self.grid.append(Cell(i))
