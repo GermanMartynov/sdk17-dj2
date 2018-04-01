@@ -15,8 +15,9 @@
         }
 
     </style>
+    <script src= "/static/sdk17/brython.js"></script>
 </head>
-<body>
+<body onload="brython()">
 <div class="main_menu">
     <h1>Sudoku menu</h1>
     <h3><a href="{% url 'show_puzzle_url' %}">Resume puzzle</a><br>
@@ -25,6 +26,21 @@
 {#        <a href="{% url 'load_tables_from_file_url' %}">Load base tables</a>#}
     </h3>
 </div>
+
+
+<img src="/static/sdk17/mp.png" alt="My image"/>
+
+<script type="text/python">
+from browser import document, alert
+
+# bind event 'click' on button to function echo
+@document["mybutton"].bind("click")
+def echo(ev):
+    alert(document["zone"].value)
+
+</script>
+<input id="zone">
+<button id="mybutton">click !</button>
 
 </body>
 </html>
