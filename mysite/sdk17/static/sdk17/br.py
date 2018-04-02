@@ -479,7 +479,6 @@ if __name__ == '__main__':
         print(s['solution'])
 
 
-
     # new.load_table(base)
     # new.load_table(base)
     # rule = new.mix()
