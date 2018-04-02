@@ -261,27 +261,28 @@ class Puzzle:
             b = self.blank_cells  # обновляем список индексов
         return b   # возвращаем список индексов
 
-    def solve(self, sol, max_solution=0, find_singles=True):
+    def solve(self, sol, max_solution=0, find_singles=True, difficalty=0):
         """  Найти  множество решений пазла
         :param sol: множество решений пазла
         :param max_solution: искать решений не более max_solution, если 0 - найти все решения
         :return: None"""
-        if max_solution and len(sol) == max_solution: return # возврат есле найдено нужное количество решений
+        if max_solution and len(sol) == max_solution: return difficalty # возврат есле найдено нужное количество решений
         if find_singles:    # если для решения используем поиск синглов
             b = self.find_single_ang_set()   # ищем и устанавливаем голые и скрытые синглы
         else:                       # или
             b = self.blank_cells  # без поиска скрытых синглов
         if b == []:     # нет пустых ячеек - пазл решен!!!
             sol.add(self)   # добавить решенный пазл к множеству решений
-            return          # выход
+            return difficalty    # выход
         else:
             if len(b[0].marks) == 0:  # нет отметок в первой пустой ячейке?
-                return  # неправильный пазл
+                return difficalty # неправильный пазл
             else:  # если отметки есть
                 for v in b[0].marks.candidats:  # для каждого возможного значения
                     puz = copy.deepcopy(self)   # создаем "глубокую" копию пазла
                     puz.set_value(b[0].index, v)  # устанавливаем значение в ячейку
-                    puz.solve(sol, max_solution, find_singles)  # пробуем решить
+                    difficalty = puz.solve(sol, max_solution, find_singles, difficalty + 1)  # пробуем решить
+                return difficalty  # возвращаем difficalty
 
     def get_solution(self):
         if self.has_base_solutin:
@@ -290,7 +291,7 @@ class Puzzle:
         if not self.solved:
             puz = copy.deepcopy(self)
             sol = set()
-            puz.solve(sol, max_solution=2)
+            self.solved['difficalty'] = puz.solve(sol, max_solution=2)
             self.solved['n_solutions'] = len(sol)
             self.solved['solution'] = []
             for s in sol:
@@ -471,7 +472,7 @@ if __name__ == '__main__':
 
     t = time.time()
     solved = new.get_solution()
-    print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (solved['n_solutions'], time.time() - t))
+    print('C поиском скрытых синглов. Трудность: %d Решений:%d   Затрачено времени:%f секунд' % (solved['difficalty'], solved['n_solutions'], time.time() - t))
     for r in solved['solution']:
         print(r)
 
