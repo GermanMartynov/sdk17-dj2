@@ -62,7 +62,7 @@ class Puzzle:
         self.solved = {}    # словарь с решением текущего состояния пазла
                             # если словарь пустой - решения не известны, иначе:
                                 # по ключу 'n_solutions' лежит количество решений
-                                # по ключу 'solution' массив с значениями решения по строкам
+                                # по ключу 'solution' список с решений в виде девяти []
 
         for i in range(81): # загружаем ячейки пустыми или из базовой строки
             self.grid.append(Cell(i, int(base_str[i]), give=True)) if base_str else self.grid.append(Cell(i))
@@ -266,9 +266,9 @@ class Puzzle:
         :param sol: множество решений пазла
         :param max_solution: искать решений не более max_solution, если 0 - найти все решения
         :return: None"""
-        if max_solution and len(sol) == max_solution: return
+        if max_solution and len(sol) == max_solution: return # возврат есле найдено нужное количество решений
         if find_singles:    # если для решения используем поиск синглов
-            b = self.find_single_ang_set()   # ищем голые и скрытые синглы
+            b = self.find_single_ang_set()   # ищем и устанавливаем голые и скрытые синглы
         else:                       # или
             b = self.blank_cells  # без поиска скрытых синглов
         if b == []:     # нет пустых ячеек - пазл решен!!!
@@ -286,15 +286,15 @@ class Puzzle:
     def get_solution(self):
         if self.has_base_solutin:
             self.solved['n_solutions'] = 1 if self.single_solution else 2
-            self.solved['solution'] = [[cell.base_value for cell in row] for row in self.rows]
+            self.solved['solution'].append([[cell.base_value for cell in row] for row in self.rows])
         if not self.solved:
             puz = copy.deepcopy(self)
             sol = set()
             puz.solve(sol, max_solution=2)
-            n = len(sol)
-            self.solved['n_solutions'] = n
-            if len(sol):
-                self.solved['solution'] = [[cell.value for cell in rw] for rw in sol.pop().rows]
+            self.solved['n_solutions'] = len(sol)
+            self.solved['solution'] = []
+            for s in sol:
+                self.solved['solution'].append([[cell.value for cell in rw] for rw in s.rows])
         return self.solved
 
     def transposing(self):
@@ -456,7 +456,8 @@ if __name__ == '__main__':
     import time
     print('-' * 8, ' Test ', '-' * 8)
 
-    base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
+    # base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
+    base = '123456789000000000000000000912345678000000000000000000891234567000000000000000000'
     print(base)
     new = Puzzle(base)
 
@@ -468,36 +469,31 @@ if __name__ == '__main__':
 
     print(new.grid[0].marks[2])
 
-    sol = set()
     t = time.time()
     solved = new.get_solution()
-    print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(sol), time.time() - t))
+    print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (solved['n_solutions'], time.time() - t))
+    for r in solved['solution']:
+        print(r)
 
-
-    s = ''
-    if solved:
-        for cell in solved[0].grid:
-            s += str(cell.value)
-        print(s)
 
 
     # new.load_table(base)
-    new.load_table(base)
-    rule = new.mix()
-    new.show()
-    print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
-    fp1 = new.make_finger_print()
-
-    sol = set()
-    t = time.time()
-    new.solve(sol, max_solution=2, find_singles=True)
-    print('Без поиска скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(sol), time.time() - t))
-    solved = sol.pop()
-    solved.show()
-
-    print(len(fp0),'fp0:', fp0)
-    print(len(fp1),'fp1:', fp1)
-
+    # new.load_table(base)
+    # rule = new.mix()
+    # new.show()
+    # print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
+    # fp1 = new.make_finger_print()
+    #
+    # sol = set()
+    # t = time.time()
+    # new.solve(sol, max_solution=2, find_singles=True)
+    # print('Без поиска скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(sol), time.time() - t))
+    # solved = sol.pop()
+    # solved.show()
+    #
+    # print(len(fp0),'fp0:', fp0)
+    # print(len(fp1),'fp1:', fp1)
+    #
     # n = 0
 
     # while True:
