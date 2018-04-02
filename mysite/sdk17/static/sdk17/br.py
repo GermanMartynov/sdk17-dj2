@@ -59,10 +59,12 @@ class Puzzle:
         self.steps = []             # история установки значений
         self.transformations = []   # история трансформаций
         self.relabelings = []       # история замены значений
-        self.solved = {}    # словарь с решением текущего состояния пазла
-                            # если словарь пустой - решения не известны, иначе:
-                                # по ключу 'n_solutions' лежит количество решений
-                                # по ключу 'solution' список с решений в виде девяти []
+        self.forks = 0              # оценка количества ветвлений при решении
+        self.solved = []    # список решений текущего состояния пазла
+                            # если список пустой - решения не известны,
+                            # иначе: каждое решение представляет собой словарь:
+                                # по ключу 'difficalty' лежит оценка трудности
+                                #  по ключу 'solution'  решение в виде списка из девяти []
 
         for i in range(81): # загружаем ячейки пустыми или из базовой строки
             self.grid.append(Cell(i, int(base_str[i]), give=True)) if base_str else self.grid.append(Cell(i))
@@ -193,7 +195,7 @@ class Puzzle:
                 self.update_marks_by_value(i, v)    # пересчитываем метки
                 self.steps.append(self.grid[i])     # записываем установленную ячейку
                 if self.grid[i].value != self.grid[i].base_value: # если значение не совпадает с решением
-                        self.solved = {}                # обнуляем решение
+                        self.solved = []                # обнуляем решение
             else:   # если в заполненную:
                 return      # ничего не делаем и возвращаемся
         else: # если надо выставить нулевое значение
@@ -203,7 +205,7 @@ class Puzzle:
                     step.value = 0              # очищаем ее
                     if i == step.index:         # если это был индекс нужной нам ячейки
                         self.update_all_marks()     # пересчитываем все отметки
-                        self.solved = {}                    # обнуляем решение
+                        self.solved = []                    # обнуляем решение
                         return                      # и возвращаемся
 
     def update_marks_by_value(self, i, v):
@@ -272,8 +274,9 @@ class Puzzle:
         else:                       # или
             b = self.blank_cells  # без поиска скрытых синглов
         if b == []:     # нет пустых ячеек - пазл решен!!!
+            self.forks = difficalty # сохраняем оценку трудности пазла
             sol.add(self)   # добавить решенный пазл к множеству решений
-            return difficalty    # выход
+            return 0    # выход с обнулением трудности
         else:
             if len(b[0].marks) == 0:  # нет отметок в первой пустой ячейке?
                 return difficalty # неправильный пазл
@@ -285,17 +288,14 @@ class Puzzle:
                 return difficalty  # возвращаем difficalty
 
     def get_solution(self):
-        if self.has_base_solutin:
-            self.solved['n_solutions'] = 1 if self.single_solution else 2
+        if self.has_base_solutin: ## похоже это лишнее
             self.solved['solution'].append([[cell.base_value for cell in row] for row in self.rows])
         if not self.solved:
             puz = copy.deepcopy(self)
             sol = set()
-            self.solved['difficalty'] = puz.solve(sol, max_solution=2)
-            self.solved['n_solutions'] = len(sol)
-            self.solved['solution'] = []
+            puz.solve(sol, max_solution=2)
             for s in sol:
-                self.solved['solution'].append([[cell.value for cell in rw] for rw in s.rows])
+                self.solved.append({'difficalty': s.forks, 'solution':[[cell.value for cell in rw] for rw in s.rows]})
         return self.solved
 
     def transposing(self):
@@ -457,8 +457,9 @@ if __name__ == '__main__':
     import time
     print('-' * 8, ' Test ', '-' * 8)
 
+    base = '000000000000001002034000005000030000006000004100007020000400800000600000800000170'
     # base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
-    base = '123456789000000000000000000912345678000000000000000000891234567000000000000000000'
+    # base = '123456789000000000000000000912345678000000000000000000891234567000000000000000000'
     print(base)
     new = Puzzle(base)
 
@@ -472,9 +473,10 @@ if __name__ == '__main__':
 
     t = time.time()
     solved = new.get_solution()
-    print('C поиском скрытых синглов. Трудность: %d Решений:%d   Затрачено времени:%f секунд' % (solved['difficalty'], solved['n_solutions'], time.time() - t))
-    for r in solved['solution']:
-        print(r)
+    print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(solved), time.time() - t))
+    for s in solved:
+        print('Трудность: %d : ' % s['difficalty'])
+        print(s['solution'])
 
 
 
