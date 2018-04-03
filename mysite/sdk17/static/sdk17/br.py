@@ -6,7 +6,7 @@
 """
 import random
 import copy
-# from browser import document, alert
+from browser import document, alert
 
 def sum_of(lst):
     """Вернуть сумму элементов списка"""
@@ -276,13 +276,14 @@ class Puzzle:
         if b == []:     # нет пустых ячеек - пазл решен!!!
             self.forks = difficalty # сохраняем оценку трудности пазла
             sol.add(self)   # добавить решенный пазл к множеству решений
-            return 0    # выход с обнулением трудности
+            difficalty = 0
+            return difficalty   # выход с обнулением трудности
         else:
             if len(b[0].marks) == 0:  # нет отметок в первой пустой ячейке?
                 return difficalty # неправильный пазл
             else:  # если отметки есть
                 for v in b[0].marks.candidats:  # для каждого возможного значения
-                    puz = copy.deepcopy(self)   # создаем "глубокую" копию пазла
+                    puz = Puzzle(self.puzzle_str())   # создаем  копию пазла
                     puz.set_value(b[0].index, v)  # устанавливаем значение в ячейку
                     difficalty = puz.solve(sol, max_solution, find_singles, difficalty + 1)  # пробуем решить
                 return difficalty  # возвращаем difficalty
@@ -291,7 +292,7 @@ class Puzzle:
         if self.has_base_solutin: ## похоже это лишнее
             self.solved['solution'].append([[cell.base_value for cell in row] for row in self.rows])
         if not self.solved:
-            puz = copy.deepcopy(self)
+            puz = Puzzle(self.puzzle_str())  # создаем  копию пазла
             sol = set()
             puz.solve(sol, max_solution=2)
             for s in sol:
@@ -453,33 +454,40 @@ class Puzzle:
 
 
 #  тесты модуля
-if __name__ == '__main__':
+
+
+# bind event 'click' on button to function echo
+@document["mybutton"].bind("click")
+def echo(ev):
     import time
-    print('-' * 8, ' Test ', '-' * 8)
+    alert(document["zone"].value)
+    if __name__ == '__main__':
+        print('-' * 8, ' Test ', '-' * 8)
 
-    base = '000000000000001002034000005000030000006000004100007020000400800000600000800000170'
-    # base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
-    # base = '123456789000000000000000000912345678000000000000000000891234567000000000000000000'
-    print(base)
-    new = Puzzle(base)
+        # base = '000000000000001002034000005000030000006000004100007020000400800000600000800000170'
+        base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
+        # base = '123456789000000000000000000912345678000000000000000000891234567000000000000000000'
+        print(base)
+        new = Puzzle(base)
 
-    # new.show()
-    print(new.is_correct)
-    print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
-    fp0 = new.make_finger_print()
-    # print('find_singles:', [new.grid[i]['mark'] for i in new.find_single_ang_set()])
+        # new.show()
+        # print(new.is_correct)
+        # print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
+        # fp0 = new.make_finger_print()
+        # print('find_singles:', [new.grid[i]['mark'] for i in new.find_single_ang_set()])
 
-    print(new.grid[0].marks[2])
+        # print(new.grid[0].marks[2])
 
-    t = time.time()
-    solved = new.get_solution()
-    print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(solved), time.time() - t))
-    for s in solved:
-        print('Трудность: %d : ' % s['difficalty'])
-        print(s['solution'])
+        t = time.time()
+        solved = new.get_solution()
+        print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(solved), time.time() - t))
+        for s in solved:
+            print('Трудность: %d : ' % s['difficalty'])
+            print(s['solution'])
 
 
-    # new.load_table(base)
+
+            # new.load_table(base)
     # new.load_table(base)
     # rule = new.mix()
     # new.show()
@@ -602,7 +610,3 @@ if __name__ == '__main__':
     #         clr.pop()   # исключаем индекс последней ячейки из списка очищеных
 
 
-# bind event 'click' on button to function echo
-# @document["mybutton"].bind("click")
-# def echo(ev):
-#     alert("модуль " +  __name__ + " говорит: " + document["zone"].value)
