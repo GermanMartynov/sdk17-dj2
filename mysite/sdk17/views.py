@@ -8,7 +8,6 @@ import time
 import copy
 
 
-
 # Create your views here.
 
 def sudoku_main_page(request):

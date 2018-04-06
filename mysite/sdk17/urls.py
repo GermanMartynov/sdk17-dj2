@@ -24,4 +24,5 @@ urlpatterns = [
     path('puzzle/relabel/', views.relabe_puzzle, name='relabe_puzzle_url'),
     path('puzzle/relabel/undo/', views.undo_relabeling_puzzle, name='undo_relabeling_puzzle_url'),
     path('puzzle/solve/', views.solve_puzzle, name='solve_puzzle_url'),
+
 ]
