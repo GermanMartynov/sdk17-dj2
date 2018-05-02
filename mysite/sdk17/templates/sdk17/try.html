@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sudoku main page</title>
+    <style type="text/css">
+        .head{
+            margin:0 auto 0;
+            border: solid;
+            align-content: center;
+        }
+        .main_menu{
+            margin:0 auto;
+            text-align: center;
+        }
+
+    </style>
+    <script src= "/static/sdk17/brython.js"></script>
+    <script src= "/static/sdk17/brython_stdlib.js"></script>
+    <script async src="/static/sdk17/br.py" type="text/python"></script>
+</head>
+<body onload="brython()">
+<div class="main_menu">
+    <h1>Lets try to solve</h1>
+    <h3><a href="{% url 'show_puzzle_url' %}">Resume puzzle</a><br>
+        <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a><br>
+        <a href={% url 'new_random_puzzle_url' %}>New random puzzle</a><br>
+{#        <a href="{% url 'load_tables_from_file_url' %}">Load base tables</a>#}
+    </h3>
+</div>
+
+
+<input id="zone">
+<button id="mybutton">click !</button>
+
+</body>
+</html>
