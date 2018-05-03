@@ -68,6 +68,15 @@ class Puzzle:
             if base_solution: self.grid[i].base_value = int(base_solution[i])
         if base_str: self.update_all_marks()
 
+    def __str__(self):
+        """подготавливает строку для выводв при печати пазла """
+        ps = self.puzzle_str()
+        show_str = 'Puzzle:' + '\n' + ps + '\n\n'
+        for i in range(9):
+            show_str = show_str + ps[i*9:i*9 + 9] + '\n'
+        return show_str
+
+
     def puzzle_str(self):
         """возвращает строку с текущими значениями пазла"""
         ps = ''
@@ -78,13 +87,9 @@ class Puzzle:
                 ps += '0'
         return ps
 
-    def __str__(self):
-        """подготавливает строку для выводв при печати пазла """
-        ps = self.puzzle_str()
-        show_str = 'Puzzle:' + '\n' + ps + '\n\n'
-        for i in range(9):
-            show_str = show_str + ps[i*9:i*9 + 9] + '\n'
-        return show_str
+    @property
+    def str(self):
+        return self.puzzle_str()
 
     @property
     def base_solution(self):

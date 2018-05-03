@@ -81,7 +81,7 @@
         }
 
       .modalDialog > div {
-      	width: 400px;
+      	width: 800px;
       	position: relative;
       	margin: 10% auto;
       	padding: 5px 20px 13px 20px;
@@ -181,16 +181,16 @@
     </table>
 </div>
 
-<a href="#openModal">Открыть модальное окно</a>
+<a href="#openModal">Решить браузером в модальном окне</a>
 
 <div id="openModal" class="modalDialog">
 	<div>
 		<a href="#close" title="Закрыть" class="close">X</a>
 		<h2>Модальное окно</h2>
-		<p>Пример простого модального окна, которое может быть создано с использованием CSS3.</p>
-		<p>Его можно использовать в широком диапазоне, начиная от вывода сообщений и заканчивая формой регистрации.</p>
-    <input id="zone">
-    <button id="mybutton">click !</button>
+    <p id="given">{{ puzzle.str}}</p>
+		<p id="msg">Ищу решения ...</p>
+    <p id="sol">Ждем ... </p>
+    <button id="mybutton">Try to solve</button>
 	</div>
 </div>
 

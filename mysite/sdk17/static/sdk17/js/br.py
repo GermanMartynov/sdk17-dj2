@@ -71,6 +71,14 @@ class Puzzle:
             if base_solution: self.grid[i].base_value = int(base_solution[i])
         if base_str: self.update_all_marks()
 
+    def __str__(self):
+        """подготавливает строку для выводв при печати пазла """
+        ps = self.puzzle_str()
+        show_str = 'Puzzle:' + '\n' + ps + '\n\n'
+        for i in range(9):
+            show_str = show_str + ps[i*9:i*9 + 9] + '\n'
+        return show_str
+
     def puzzle_str(self):
         """возвращает строку с текущими значениями пазла"""
         ps = ''
@@ -81,13 +89,10 @@ class Puzzle:
                 ps += '0'
         return ps
 
-    def __str__(self):
-        """подготавливает строку для выводв при печати пазла """
-        ps = self.puzzle_str()
-        show_str = 'Puzzle:' + '\n' + ps + '\n\n'
-        for i in range(9):
-            show_str = show_str + ps[i*9:i*9 + 9] + '\n'
-        return show_str
+
+    @property
+    def str(self):
+        return self.puzzle_str()
 
     @property
     def base_solution(self):
@@ -192,6 +197,7 @@ class Puzzle:
         if v:   # если надо поставить ненулевое значение
             if self.grid[i].value == 0:     # в пустую ячейку:
                 self.grid[i].set(v)                 # ставим заначение
+                self.str = self.puzzle_str()        # обновляем строку значений пазла
                 self.update_marks_by_value(i, v)    # пересчитываем метки
                 self.steps.append(self.grid[i])     # записываем установленную ячейку
                 if self.grid[i].value != self.grid[i].base_value: # если значение не совпадает с решением
@@ -203,6 +209,7 @@ class Puzzle:
                 while True: # делаем следующее:
                     step = self.steps.pop()   # извлекаем из истории шагов последнюю установленную ячейку
                     step.value = 0              # очищаем ее
+                    self.str = self.puzzle_str()        # обновляем строку значений пазла
                     if i == step.index:         # если это был индекс нужной нам ячейки
                         self.update_all_marks()     # пересчитываем все отметки
                         self.solved = []                    # обнуляем решение
@@ -296,7 +303,7 @@ class Puzzle:
             sol = set()
             puz.solve(sol, max_solution=2)
             for s in sol:
-                self.solved.append({'difficalty': s.forks, 'solution':[[cell.value for cell in rw] for rw in s.rows]})
+                self.solved.append({'difficalty': s.forks, 'solution':[[cell.value for cell in rw] for rw in s.rows], 'str_solution':s.str})
         return self.solved
 
     def transposing(self):
@@ -460,13 +467,15 @@ class Puzzle:
 @document["mybutton"].bind("click")
 def echo(ev):
     import time
-    alert(document["zone"].value)
+    # alert("Будем решать: " + document["given"].textContent)
     if __name__ == '__main__':
         print('-' * 8, ' Test ', '-' * 8)
 
         # base = '000000000000001002034000005000030000006000004100007020000400800000600000800000170'
-        base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
+        # base = '000000000000001002034000050000002000005000400006000700020470000080030000100000006'
         # base = '123456789000000000000000000912345678000000000000000000891234567000000000000000000'
+        base = document["given"].textContent # получаем строку пазла из DOC
+
         print(base)
         new = Puzzle(base)
 
@@ -480,10 +489,12 @@ def echo(ev):
 
         t = time.time()
         solved = new.get_solution()
-        print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(solved), time.time() - t))
+        document["msg"].textContent = 'Решений:%d   Затрачено времени:%f секунд' % (len(solved), time.time() - t)
+        print(document["msg"].textContent) # вывод в консоль
         for s in solved:
+            document["sol"].textContent = s['str_solution']
             print('Трудность: %d : ' % s['difficalty'])
-            print(s['solution'])
+            print(s['str_solution'])
 
 
 
@@ -608,5 +619,3 @@ def echo(ev):
     #         clr.pop()   # исключаем индекс последней ячейки из списка очищеных
     #         new.set_value(clr[-1] ,start_puz.grid[clr[-1]]['value'])    #  возвращаемся еще на шаг назад
     #         clr.pop()   # исключаем индекс последней ячейки из списка очищеных
-
-
