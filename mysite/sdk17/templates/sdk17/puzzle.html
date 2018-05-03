@@ -114,8 +114,11 @@
 /* end (стили для модального окна) */
 
   </style>
+  <script src= "/static/sdk17/js/brython.js"></script>
+  <script src= "/static/sdk17/js/brython_stdlib.js"></script>
+  <script async src="/static/sdk17/js/br.py" type="text/python"></script>
 </head>
-<body>
+<body  onload="brython()">
 
 <div class="puzzle_menu">
     <div class="center">
@@ -186,6 +189,8 @@
 		<h2>Модальное окно</h2>
 		<p>Пример простого модального окна, которое может быть создано с использованием CSS3.</p>
 		<p>Его можно использовать в широком диапазоне, начиная от вывода сообщений и заканчивая формой регистрации.</p>
+    <input id="zone">
+    <button id="mybutton">click !</button>
 	</div>
 </div>
 
